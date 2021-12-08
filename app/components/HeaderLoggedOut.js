@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 
 import axios from "axios"
 
-function HeaderLoggedOut() {
+function HeaderLoggedOut(props) {
   const [username, setUsername] = useState()
   const [password, setPassword] = useState()
   async function handleSubmit(e) {
@@ -11,8 +11,10 @@ function HeaderLoggedOut() {
 
     try {
       const response = await axios.post("http://localhost:8080/login", data)
-      if (response.data) console.log(response.data)
-      else alert("Incorrect Username/Password")
+      if (response.data) {
+        props.setLoggedIn(true)
+        console.log(response.data)
+      } else alert("Incorrect Username/Password")
     } catch (error) {
       console.log("There was an error")
     }
