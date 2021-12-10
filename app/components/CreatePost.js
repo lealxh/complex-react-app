@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react"
+import { withRouter } from "react-router-dom"
 import Axios from "axios"
 import Page from "./Page"
 
-function CreatePost() {
+function CreatePost(props) {
   const [title, setTitle] = useState()
   const [body, setBody] = useState()
 
@@ -10,7 +11,8 @@ function CreatePost() {
     e.preventDefault()
 
     try {
-      await Axios.post("/create-post", { title, body, token: localStorage.getItem("complexappToken") })
+      const response = await Axios.post("/create-post", { title, body, token: localStorage.getItem("complexappToken") })
+      props.history.push(`/post/${response.data}`)
       console.log("Post created")
     } catch (error) {
       console.log("There was a problem")
@@ -39,4 +41,4 @@ function CreatePost() {
   )
 }
 
-export default CreatePost
+export default withRouter(CreatePost)
