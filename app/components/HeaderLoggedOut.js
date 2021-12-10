@@ -10,7 +10,7 @@ function HeaderLoggedOut(props) {
     const data = { username, password }
 
     try {
-      const response = await axios.post("http://localhost:8080/login", data)
+      const response = await axios.post("/login", data)
       if (response.data) {
         props.setLoggedIn(true)
         localStorage.setItem("complexappToken", response.data.token)
