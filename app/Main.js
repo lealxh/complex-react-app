@@ -22,6 +22,7 @@ import Profile from "./components/Profile"
 
 function Main() {
   const initialState = {
+    loggedIn: Boolean(localStorage.getItem("complexappToken")),
     flashMessages: [],
     user: {
       token: localStorage.getItem("complexappToken"),
@@ -46,15 +47,11 @@ function Main() {
   const [state, dispatch] = useImmerReducer(OurReducer, initialState)
 
   useEffect(() => {
-    if (state.loggedIn == true) {
-      console.log("Logged in")
+    if (state.loggedIn) {
       localStorage.setItem("complexappToken", state.user.token)
       localStorage.setItem("complexappUsername", state.user.username)
       localStorage.setItem("complexappAvatar", state.user.avatar)
-    }
-
-    if (state.loggedIn == false) {
-      console.log("Logged out")
+    } else {
       localStorage.removeItem("complexappToken")
       localStorage.removeItem("complexappUsername")
       localStorage.removeItem("complexappAvatar")
