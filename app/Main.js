@@ -18,6 +18,7 @@ import FlashMessages from "./components/FlashMessages"
 import StateContext from "./StateContext"
 import DispatchContext from "./DispatchContext"
 import { useEffect } from "react/cjs/react.development"
+import Profile from "./components/Profile"
 
 function Main() {
   const initialState = {
@@ -33,22 +34,27 @@ function Main() {
       case "login":
         draft.loggedIn = true
         draft.user = action.data
-        break
+        return
       case "logout":
         draft.loggedIn = false
-        break
+        return
       case "flashmessage":
         draft.flashMessages.push(action.value)
-        break
+        return
     }
   }
   const [state, dispatch] = useImmerReducer(OurReducer, initialState)
+
   useEffect(() => {
-    if (state.loggedIn) {
+    if (state.loggedIn == true) {
+      console.log("Logged in")
       localStorage.setItem("complexappToken", state.user.token)
       localStorage.setItem("complexappUsername", state.user.username)
       localStorage.setItem("complexappAvatar", state.user.avatar)
-    } else {
+    }
+
+    if (state.loggedIn == false) {
+      console.log("Logged out")
       localStorage.removeItem("complexappToken")
       localStorage.removeItem("complexappUsername")
       localStorage.removeItem("complexappAvatar")
@@ -76,6 +82,9 @@ function Main() {
             </Route>
             <Route path="/post/:id">
               <ViewSinglePost />
+            </Route>
+            <Route path="/profile/:username">
+              <Profile />
             </Route>
           </Switch>
           <Footer />
