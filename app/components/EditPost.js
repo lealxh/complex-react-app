@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import axios from "axios"
 import Page from "./Page"
@@ -41,18 +41,34 @@ function EditPost() {
         return
       case "titleChange":
         draft.title.value = action.value
+        draft.title.hasErrors = false
+        draft.title.message = ""
         return
       case "bodyChange":
         draft.body.value = action.value
+        draft.body.hasErrors = false
+        draft.body.message = ""
         return
       case "submitRequest":
-        draft.sendCount++
+        if (!draft.title.hasErrors && !draft.body.hasErrors) draft.sendCount++
         return
       case "saveRequestStarted":
         draft.isSaving = true
         return
       case "saveRequestFinished":
         draft.isSaving = false
+        return
+      case "titleRules":
+        if (!action.value.trim()) {
+          draft.title.hasErrors = true
+          draft.title.message = "You must provide a title"
+        }
+        return
+      case "bodyRules":
+        if (!action.value.trim()) {
+          draft.body.hasErrors = true
+          draft.body.message = "You must provide a body"
+        }
         return
     }
   }
@@ -63,7 +79,6 @@ function EditPost() {
     async function fetchPost() {
       try {
         const response = await axios.get(`post/${state.id}`, { cancelToken: request.token })
-        console.log(response.data)
         dispatch({ type: "fetchComplete", value: response.data })
       } catch (error) {
         console.log("There was a problem")
@@ -82,7 +97,6 @@ function EditPost() {
       if (state.sendCount) {
         dispatch({ type: "saveRequestStarted" })
         try {
-          console.log(appState.user)
           const response = await axios.post(`post/${state.id}/edit`, { title: state.title.value, body: state.body.value, token: appState.user.token }, { cancelToken: saveRequest.token })
           dispatch({ type: "saveRequestFinished" })
           appDispatch({ type: "flashmessage", value: "Post updated successfully.!!" })
@@ -100,10 +114,17 @@ function EditPost() {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    dispatch({ type: "titleRules", value: state.title.value })
+    dispatch({ type: "bodyRules", value: state.body.value })
     dispatch({ type: "submitRequest" })
   }
 
-  if (state.isFetching) return <LoadingIcon />
+  if (state.isFetching)
+    return (
+      <Page title="...">
+        <LoadingIcon />
+      </Page>
+    )
 
   return (
     <Page title="Edit post">
@@ -117,6 +138,7 @@ function EditPost() {
             onChange={e => {
               dispatch({ type: "titleChange", value: e.target.value })
             }}
+            onBlur={e => dispatch({ type: "titleRules", value: e.target.value })}
             autoFocus
             name="title"
             id="post-title"
@@ -125,6 +147,7 @@ function EditPost() {
             placeholder=""
             autoComplete="off"
           />
+          {state.title.hasErrors ? <div className="alert alert-danger liveValidateMessage">{state.title.message}</div> : ""}
         </div>
 
         <div className="form-group">
@@ -136,11 +159,13 @@ function EditPost() {
             onChange={e => {
               dispatch({ type: "bodyChange", value: e.target.value })
             }}
+            onBlur={e => dispatch({ type: "bodyRules", value: e.target.value })}
             name="body"
             id="post-body"
             className="body-content tall-textarea form-control"
             type="text"
           />
+          {state.body.hasErrors ? <div className="alert alert-danger liveValidateMessage">{state.body.message}</div> : ""}
         </div>
 
         <button className="btn btn-primary" disabled={state.isSaving}>
