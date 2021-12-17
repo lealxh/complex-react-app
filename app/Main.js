@@ -19,6 +19,7 @@ import StateContext from "./StateContext"
 import DispatchContext from "./DispatchContext"
 import { useEffect } from "react/cjs/react.development"
 import Profile from "./components/Profile"
+import EditPost from "./components/EditPost"
 
 function Main() {
   const initialState = {
@@ -35,6 +36,8 @@ function Main() {
       case "login":
         draft.loggedIn = true
         draft.user = action.data
+        console.log("Login dispatch:")
+        console.log(action.data)
         return
       case "logout":
         draft.loggedIn = false
@@ -77,7 +80,10 @@ function Main() {
             <Route path="/terms">
               <Terms />
             </Route>
-            <Route path="/post/:id">
+            <Route exact path="/post/:id/edit">
+              <EditPost />
+            </Route>
+            <Route exact path="/post/:id">
               <ViewSinglePost />
             </Route>
             <Route path="/profile/:username">
