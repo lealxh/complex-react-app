@@ -6,10 +6,12 @@ import { Link } from "react-router-dom"
 import LoadingIcon from "./LoadingIcon"
 import { ReactMarkdown } from "react-markdown/lib/react-markdown"
 import ReactTooltip from "react-tooltip"
+import NotFound from "./NotFound"
 
 function ViewSinglePost() {
   const [isLoading, setIsLoading] = useState(true)
   const [post, setPost] = useState()
+
   const { id } = useParams()
   const request = axios.CancelToken.source()
 
@@ -30,6 +32,8 @@ function ViewSinglePost() {
       request.cancel()
     }
   }, [])
+
+  if (!isLoading && !post) return <NotFound />
 
   if (isLoading)
     return (
