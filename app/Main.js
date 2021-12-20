@@ -20,6 +20,8 @@ import DispatchContext from "./DispatchContext"
 import { useEffect } from "react/cjs/react.development"
 import Profile from "./components/Profile"
 import EditPost from "./components/EditPost"
+import Search from "./components/Search"
+import { CSSTransition } from "react-transition-group"
 
 function Main() {
   const initialState = {
@@ -29,7 +31,8 @@ function Main() {
       token: localStorage.getItem("complexappToken"),
       username: localStorage.getItem("complexappUsername"),
       avatar: localStorage.getItem("complexappAvatar")
-    }
+    },
+    isSearchOpen: false
   }
   function OurReducer(draft, action) {
     switch (action.type) {
@@ -44,6 +47,12 @@ function Main() {
         return
       case "flashmessage":
         draft.flashMessages.push(action.value)
+        return
+      case "openSearch":
+        draft.isSearchOpen = true
+        return
+      case "closeSearch":
+        draft.isSearchOpen = false
         return
     }
   }
@@ -90,6 +99,10 @@ function Main() {
               <Profile />
             </Route>
           </Switch>
+          <CSSTransition timeout={330} in={state.isSearchOpen} classNames="search-overlay" unmountOnExit>
+            <Search />
+          </CSSTransition>
+
           <Footer />
         </BrowserRouter>
       </DispatchContext.Provider>
