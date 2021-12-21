@@ -25,7 +25,7 @@ function ProfilePosts() {
     return () => {
       request.cancel()
     }
-  }, [])
+  }, [username])
 
   if (isLoading) return <LoadingIcon />
 
