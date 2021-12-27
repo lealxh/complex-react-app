@@ -84,9 +84,10 @@ function Profile() {
   }, [state.stopFollowingRequestCount])
 
   useEffect(() => {
+    const request = axios.CancelToken.source()
     async function fetchData() {
       try {
-        const resp = await axios.post(`/profile/${username}`, { token: appState.user.token })
+        const resp = await axios.post(`/profile/${username}`, { token: appState.user.token }, { cancelToken: request.CancelToken })
         setState(draft => {
           draft.profileData = resp.data
         })
@@ -95,6 +96,9 @@ function Profile() {
       }
     }
     fetchData()
+    return () => {
+      request.cancel()
+    }
   }, [username])
   return (
     <Page title="Profile screen">
