@@ -3,7 +3,7 @@ import ReactDOM from "react-dom"
 import { BrowserRouter, Switch, Route } from "react-router-dom"
 import { useImmerReducer } from "use-immer"
 import Axios from "axios"
-Axios.defaults.baseURL = "http://localhost:8080"
+Axios.defaults.baseURL = process.env.BACKENDURL || ""
 
 // My Components
 import Header from "./components/Header"
@@ -20,7 +20,7 @@ const ViewSinglePost = React.lazy(() => import("./components/ViewSinglePost"))
 import FlashMessages from "./components/FlashMessages"
 import StateContext from "./StateContext"
 import DispatchContext from "./DispatchContext"
-import { useEffect } from "react/cjs/react.development"
+import { useEffect } from "react"
 import Profile from "./components/Profile"
 import EditPost from "./components/EditPost"
 //import Search from "./components/Search"
