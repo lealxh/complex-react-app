@@ -24,7 +24,7 @@ function Chat() {
   }, [appState.isChatOpen])
 
   useEffect(() => {
-    socket.current = io("http://localhost:8080")
+    socket.current = io(process.env.BACKENDURL || "https://backend-react-app123.herokuapp.com/")
     socket.current.on("chatFromServer", message => {
       console.log("Message received: ")
       console.log(message)

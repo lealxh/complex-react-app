@@ -3,7 +3,7 @@ import ReactDOM from "react-dom"
 import { BrowserRouter, Switch, Route } from "react-router-dom"
 import { useImmerReducer } from "use-immer"
 import Axios from "axios"
-Axios.defaults.baseURL = process.env.BACKENDURL || ""
+Axios.defaults.baseURL = process.env.BACKENDURL || "https://backend-react-app123.herokuapp.com/"
 
 // My Components
 import Header from "./components/Header"
