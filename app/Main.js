@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from "react"
+import React, { useState, useReducer, Suspense } from "react"
 import ReactDOM from "react-dom"
 import { BrowserRouter, Switch, Route } from "react-router-dom"
 import { useImmerReducer } from "use-immer"
@@ -12,18 +12,25 @@ import Home from "./components/Home"
 import Footer from "./components/Footer"
 import About from "./components/About"
 import Terms from "./components/Terms"
-import CreatePost from "./components/CreatePost"
-import ViewSinglePost from "./components/ViewSinglePost"
+//import CreatePost from "./components/CreatePost"
+const CreatePost = React.lazy(() => import("./components/CreatePost"))
+//import ViewSinglePost from "./components/ViewSinglePost"
+const ViewSinglePost = React.lazy(() => import("./components/ViewSinglePost"))
+
 import FlashMessages from "./components/FlashMessages"
 import StateContext from "./StateContext"
 import DispatchContext from "./DispatchContext"
 import { useEffect } from "react/cjs/react.development"
 import Profile from "./components/Profile"
 import EditPost from "./components/EditPost"
-import Search from "./components/Search"
+//import Search from "./components/Search"
+const Search = React.lazy(() => import("./components/Search"))
+
 import { CSSTransition } from "react-transition-group"
-import Chat from "./components/Chat"
+//import Chat from "./components/Chat"
+const Chat = React.lazy(() => import("./components/Chat"))
 import axios from "axios"
+import LoadingIcon from "./components/LoadingIcon"
 
 function Main() {
   const initialState = {
@@ -114,33 +121,40 @@ function Main() {
         <BrowserRouter>
           <FlashMessages messages={state.flashMessages} />
           <Header />
-          <Switch>
-            <Route path="/" exact>
-              {state.loggedIn ? <Home /> : <HomeGuest />}
-            </Route>
-            <Route path="/about-us">
-              <About />
-            </Route>
-            <Route path="/create-post">
-              <CreatePost />
-            </Route>
-            <Route path="/terms">
-              <Terms />
-            </Route>
-            <Route exact path="/post/:id/edit">
-              <EditPost />
-            </Route>
-            <Route exact path="/post/:id">
-              <ViewSinglePost />
-            </Route>
-            <Route path="/profile/:username">
-              <Profile />
-            </Route>
-          </Switch>
+          <Suspense fallback={<LoadingIcon />}>
+            <Switch>
+              <Route path="/" exact>
+                {state.loggedIn ? <Home /> : <HomeGuest />}
+              </Route>
+              <Route path="/about-us">
+                <About />
+              </Route>
+              <Route path="/create-post">
+                <CreatePost />
+              </Route>
+              <Route path="/terms">
+                <Terms />
+              </Route>
+              <Route exact path="/post/:id/edit">
+                <EditPost />
+              </Route>
+              <Route exact path="/post/:id">
+                <ViewSinglePost />
+              </Route>
+              <Route path="/profile/:username">
+                <Profile />
+              </Route>
+            </Switch>
+          </Suspense>
           <CSSTransition timeout={330} in={state.isSearchOpen} classNames="search-overlay" unmountOnExit>
-            <Search />
+            <div className="search-overlay">
+              <Suspense fallback="">
+                <Search />
+              </Suspense>
+            </div>
           </CSSTransition>
-          <Chat />
+
+          <Suspense fallback="">{state.loggedIn && <Chat />}</Suspense>
           <Footer />
         </BrowserRouter>
       </DispatchContext.Provider>

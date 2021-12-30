@@ -6,13 +6,12 @@ import StateContext from "../StateContext"
 import { io } from "socket.io-client"
 import { Link } from "react-router-dom"
 
-const socket = io("http://localhost:8080")
-
 function Chat() {
   const appState = useContext(StateContext)
   const appDispatch = useContext(DispatchContext)
   const chatField = useRef(null)
   const chatLog = useRef(null)
+  const socket = useRef(null)
   const [state, setState] = useImmer({
     fieldValue: "",
     chatMessages: []
@@ -25,13 +24,15 @@ function Chat() {
   }, [appState.isChatOpen])
 
   useEffect(() => {
-    socket.on("chatFromServer", message => {
+    socket.current = io("http://localhost:8080")
+    socket.current.on("chatFromServer", message => {
       console.log("Message received: ")
       console.log(message)
       setState(draft => {
         draft.chatMessages.push(message)
       })
     })
+    return () => socket.current.disconnect()
   }, [])
 
   useEffect(() => {
@@ -53,7 +54,7 @@ function Chat() {
   function handleSubmit(e) {
     e.preventDefault()
     //send message to chat server
-    socket.emit("chatFromBrowser", { message: state.fieldValue, token: appState.user.token })
+    socket.current.emit("chatFromBrowser", { message: state.fieldValue, token: appState.user.token })
     //add message to chatMessages
     setState(draft => {
       draft.chatMessages.push({ message: draft.fieldValue, username: appState.user.username, avatar: appState.user.avatar })
