@@ -15,10 +15,12 @@ function HeaderLoggedOut() {
 
     try {
       const response = await axios.post("/login", data)
-
       if (response.data) {
         appDispatch({ type: "login", data: response.data })
-      } else alert("Incorrect Username/Password")
+        appDispatch({ type: "flashmessage", value: "You have successfully logged in" })
+      } else {
+        appDispatch({ type: "flashmessage", value: "Invalid Username/Password" })
+      }
     } catch (error) {
       console.log(error)
       console.log("There was an error")

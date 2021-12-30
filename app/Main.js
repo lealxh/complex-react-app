@@ -23,6 +23,7 @@ import EditPost from "./components/EditPost"
 import Search from "./components/Search"
 import { CSSTransition } from "react-transition-group"
 import Chat from "./components/Chat"
+import axios from "axios"
 
 function Main() {
   const initialState = {
@@ -84,6 +85,28 @@ function Main() {
       localStorage.removeItem("complexappAvatar")
     }
   }, [state.loggedIn])
+
+  useEffect(() => {
+    if (state.loggedIn) {
+      const ourRequest = axios.CancelToken.source()
+      async function fetchResults() {
+        try {
+          const response = await axios.post("/checkToken", { token: state.user.token }, { cancelToken: ourRequest.token })
+          if (!response.data) {
+            dispatch({ type: "logout" })
+            dispatch({ type: "flashmessage", value: "Your session has expired. Please log in again." })
+          }
+        } catch (error) {
+          console.log("There was a problem")
+          console.log(error)
+        }
+      }
+      fetchResults()
+      return () => {
+        ourRequest.cancel()
+      }
+    }
+  }, [])
 
   return (
     <StateContext.Provider value={state}>
