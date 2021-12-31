@@ -15,6 +15,8 @@ function HeaderLoggedOut() {
 
     try {
       const response = await axios.post("/login", data)
+      console.log(response)
+
       if (response.data) {
         appDispatch({ type: "login", data: response.data })
         appDispatch({ type: "flashmessage", value: "You have successfully logged in" })
